@@ -81,7 +81,7 @@ export default function AdminClientsPage() {
   };
 
   return (
-    <ProtectedRoute requiredRole="branch_admin">
+    <ProtectedRoute requiredRole="admin">
       <div className="flex h-screen bg-[#f8f9fa]">
         {/* Sidebar */}
         <AdminSidebar

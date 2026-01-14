@@ -35,7 +35,7 @@ export function Header() {
             Sign In
           </Link>
           <Button asChild className="bg-secondary hover:bg-secondary/90 text-primary rounded-lg px-6 py-2 text-xs tracking-widest font-bold shadow-md shadow-secondary/20 transition-all duration-300 hover:scale-105 active:scale-95">
-            <Link href="/booking">BOOK NOW</Link>
+            <Link href="/services">BOOK YOUR SERVICE NOW</Link>
           </Button>
         </div>
       </div>

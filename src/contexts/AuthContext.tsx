@@ -190,7 +190,7 @@ import {
   onAuthStateChanged,
   User as FirebaseUser
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
 // UPDATED: Customer type add karein

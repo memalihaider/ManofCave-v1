@@ -411,7 +411,7 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
             <Button size="lg" asChild className="bg-secondary hover:bg-secondary/90 text-primary font-bold px-10 py-7 text-base rounded-xl transition-all duration-500 shadow-[0_0_30px_rgba(197,160,89,0.3)] hover:shadow-[0_0_50px_rgba(197,160,89,0.5)] hover:scale-105 active:scale-95">
-              <Link href="/booking">RESERVE YOUR CHAIR</Link>
+              <Link href="/services">RESERVE YOUR SERVICE</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="border-white/30 text-primary hover:bg-white hover:text-primary px-10 py-7 text-base rounded-xl transition-all duration-500 backdrop-blur-sm hover:scale-105 active:scale-95">
               <Link href="/services">VIEW OUR MENU</Link>
@@ -661,7 +661,7 @@ export default function Home() {
                 {products.length} Premium Products Available
               </Badge>
             </div>
-            <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white hover:text-primary rounded-full px-8 py-6 font-bold tracking-widest group transition-all duration-500">
+            <Button asChild variant="outline" className="border-white/20 text-black bg-white hover:text-primary rounded-full px-8 py-6 font-bold tracking-widest group transition-all duration-500">
               <Link href="/products" className="flex items-center">
                 SHOP ALL PRODUCTS <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
@@ -961,7 +961,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-8 justify-center pt-8">
             <Button size="lg" asChild className="bg-secondary hover:bg-white text-primary font-black px-14 py-10 text-sm rounded-2xl shadow-[0_20px_50px_rgba(197,160,89,0.3)] transition-all duration-500 hover:scale-110 tracking-[0.2em]">
-              <Link href="/booking">BOOK APPOINTMENT</Link>
+              <Link href="/services">BOOK APPOINTMENT</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="border-white/30 text-primary hover:bg-white hover:text-primary px-14 py-10 text-sm rounded-2xl backdrop-blur-md transition-all duration-500 hover:scale-110 tracking-[0.2em]">
               <Link href="/login">JOIN THE CLUB</Link>

@@ -87,20 +87,31 @@ const branchAdminNavItems = [
     icon: Tag,
   },
   {
+    title: 'Feedbacks',
+    href: '/admin/feedbacks',
+    icon: Tag,
+  },
+  {
+    title: 'Orders',
+    href: '/admin/orders',
+    icon: Tag,
+  },
+  {
     title: 'Membership',
     href: '/admin/membership',
     icon: Award,
-  },
-  {
-    title: 'Analytics',
-    href: '/admin/analytics',
-    icon: TrendingUp,
   },
   {
     title: 'Expenses',
     href: '/admin/expenses',
     icon: DollarSign,
   },
+  {
+    title: 'Analytics',
+    href: '/admin/analytics',
+    icon: TrendingUp,
+  },
+  
   {
     title: 'Messages',
     href: '/admin/messages',

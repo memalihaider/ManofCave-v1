@@ -388,7 +388,7 @@ export default function AdminMessages() {
   };
 
   return (
-    <ProtectedRoute requiredRole="branch_admin">
+    <ProtectedRoute requiredRole="admin">
       <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <AdminSidebar role="branch_admin" onLogout={handleLogout}
