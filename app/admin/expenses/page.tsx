@@ -306,13 +306,12 @@ export default function SuperAdminExpensesPage() {
         // Branch admin sirf apni branch ke expenses dekhe
         q = query(
           expensesRef, 
-          where('branch', '==', user.branchName),
-          orderBy('createdAt', 'desc')
+          where('branch', '==', user.branchName)
         );
         console.log(`🏢 Branch Admin: Showing expenses only for ${user.branchName}`);
       } else {
         // Super admin - sab expenses dekhe
-        q = query(expensesRef, orderBy('createdAt', 'desc'));
+        q = query(expensesRef);
       }
       
       const querySnapshot = await getDocs(q);
@@ -338,6 +337,12 @@ export default function SuperAdminExpensesPage() {
         });
       });
       
+      // Sort by createdAt in descending order (newest first)
+      expensesData.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || 0;
+        const timeB = b.createdAt?.toMillis?.() || 0;
+        return timeB - timeA;
+      });
       setManualExpenses(expensesData);
     } catch (error) {
       console.error('Error fetching manual expenses:', error);

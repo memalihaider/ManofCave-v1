@@ -15,10 +15,7 @@ export function CurrencySwitcher() {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="USD">USD</SelectItem>
-          <SelectItem value="INR">INR</SelectItem>
-          <SelectItem value="PKR">PKR</SelectItem>
-          <SelectItem value="AED">AED</SelectItem>
+          <SelectItem value="AED">AED - Dirham</SelectItem>
         </SelectContent>
       </Select>
     </div>

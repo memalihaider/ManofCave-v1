@@ -3915,7 +3915,7 @@ useEffect(() => {
 
   return (
     <ProtectedRoute requiredRole="admin">
-      <div className="flex h-screen ">
+      <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <AdminSidebar
           role="branch_admin"
@@ -3930,8 +3930,8 @@ useEffect(() => {
           sidebarOpen ? "lg:ml-0" : "lg:ml-1"
         )}>
           {/* Header */}
-          <header className="bg-white shadow-sm border-b shrink-0">
-            <div className="flex items-center justify-between px-4 py-4 lg:px-8">
+          <header className="bg-white shadow border-b shrink-0">
+            <div className="flex items-center justify-between px-6 py-5 lg:px-8">
               <div className="flex items-center gap-4">
                 <AdminMobileSidebar
                   role="branch_admin"
@@ -3940,79 +3940,13 @@ useEffect(() => {
                   onToggle={() => setSidebarOpen(!sidebarOpen)}
                 />
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Appointment Calendar</h1>
-                  <p className="text-sm text-gray-600">Manage all bookings from website and mobile</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Booking Calendar</h1>
+                  <p className="text-sm text-gray-600 mt-1">Manage appointments from all channels</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <CurrencySwitcher />
-                {/* Notifications */}
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="relative">
-                      <Bell className="w-4 h-4" />
-                      {unreadNotifications > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                          {unreadNotifications}
-                        </span>
-                      )}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Notifications</SheetTitle>
-                      <SheetDescription>
-                        Recent appointment updates and reminders
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="mt-6 space-y-4">
-                      {notifications.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>No notifications yet</p>
-                        </div>
-                      ) : (
-                        notifications.map((notification) => (
-                          <div
-                            key={notification.id}
-                            className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                              notification.read
-                                ? 'bg-muted/50 border-muted'
-                                : 'bg-background border-border'
-                            }`}
-                            onClick={() => markAsRead(notification.id)}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="shrink-0 mt-1">
-                                {getIcon(notification.type)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="text-sm font-medium truncate">
-                                    {notification.title}
-                                  </h4>
-                                  <span className="text-xs text-muted-foreground ml-2">
-                                    {formatDistanceToNow(new Date(notification.timestamp), { addSuffix: true })}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {notification.message}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </SheetContent>
-                </Sheet>
-
-                <Button variant="outline" onClick={() => router.push('/admin/booking-approvals')} className="hidden sm:flex mr-2">
+              <div className="flex items-center gap-3">
+                <Button variant="outline" onClick={() => router.push('/admin/booking-approvals')} size="sm" className="hidden md:flex">
                   Booking Approvals
-                </Button>
-                <span className="text-sm text-gray-600 hidden sm:block">Welcome, {user?.email}</span>
-                <Button variant="outline" onClick={handleLogout} className="hidden sm:flex">
-                  Logout
                 </Button>
               </div>
             </div>
@@ -4020,31 +3954,33 @@ useEffect(() => {
 
           {/* Content */}
           <div className="flex-1 overflow-auto min-h-0">
-            <div className="h-full p-4 lg:p-8">
+            <div className="h-full p-4 lg:p-6">
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'calendar' | 'advanced-calendar' | 'list' | 'approvals' | 'product-orders')}>
-                <div className="flex items-center justify-between mb-6">
-                  <TabsList>
-                    <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-                    <TabsTrigger value="advanced-calendar">Advanced Calendar</TabsTrigger>
-                    <TabsTrigger value="list">List View</TabsTrigger>
-                    <TabsTrigger value="approvals">Booking Approvals</TabsTrigger>
-                    <TabsTrigger value="product-orders">Product Orders</TabsTrigger>
-                  </TabsList>
+                <div className="flex flex-col gap-4 mb-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <TabsList className="bg-white border shadow-sm">
+                      <TabsTrigger value="calendar" className="text-sm">Calendar</TabsTrigger>
+                      <TabsTrigger value="advanced-calendar" className="text-sm">Advanced</TabsTrigger>
+                      <TabsTrigger value="list" className="text-sm">List</TabsTrigger>
+                      <TabsTrigger value="approvals" className="text-sm">Approvals</TabsTrigger>
+                      <TabsTrigger value="product-orders" className="text-sm">Orders</TabsTrigger>
+                    </TabsList>
+                  </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 max-w-sm">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                    <div className="w-full md:w-64">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
                           placeholder="Search appointments..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 h-9"
                         />
                       </div>
                     </div>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-full md:w-44 h-9">
                         <SelectValue placeholder="Filter by status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -4067,54 +4003,56 @@ useEffect(() => {
                       Create Booking
                     </Button>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[600px]">
                     {/* Calendar */}
-                    <div className="lg:col-span-2">
-                      <Card className="border-2 shadow-lg bg-white/50 backdrop-blur-sm">
-                        <CardHeader className="pb-4 border-b bg-gradient-to-r from-primary/5 to-secondary/5">
-                          <CardTitle className="flex items-center gap-3 text-xl">
-                            <Calendar className="w-6 h-6 text-primary" />
+                    <div>
+                      <Card className="border-2 shadow-lg bg-white/50 backdrop-blur-sm h-full flex flex-col">
+                        <CardHeader className="pb-3 border-b bg-gradient-to-r from-primary/5 to-secondary/5 shrink-0">
+                          <CardTitle className="flex items-center gap-3 text-lg">
+                            <Calendar className="w-5 h-5 text-primary" />
                             Booking Calendar
                           </CardTitle>
-                          <CardDescription className="text-base">
-                            Click on a date to view appointments. Appointments from both website and mobile are shown.
+                          <CardDescription className="text-sm">
+                            Click on a date to view appointments
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="pt-6">
-                          <CalendarComponent
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            className="rounded-lg border-2 shadow-sm w-full bg-white"
-                            modifiers={{
-                              hasAppointments: (date) => getAppointmentsForDate(date).length > 0
-                            }}
-                            modifiersStyles={{
-                              hasAppointments: {
-                                backgroundColor: 'rgb(59 130 246 / 0.15)',
-                                color: 'rgb(59 130 246)',
-                                fontWeight: '600',
-                                borderRadius: '8px',
-                                border: '2px solid rgb(59 130 246 / 0.3)'
-                              },
-                              today: {
-                                backgroundColor: 'rgb(251 146 60 / 0.1)',
-                                color: 'rgb(251 146 60)',
-                                fontWeight: '600',
-                                border: '2px solid rgb(251 146 60 / 0.3)'
-                              }
-                            }}
-                          />
+                        <CardContent className="pt-8 pb-8 px-8 flex items-center justify-center flex-1 overflow-auto">
+                          <div className="w-full">
+                            <CalendarComponent
+                              mode="single"
+                              selected={selectedDate}
+                              onSelect={setSelectedDate}
+                              className="rounded-lg border-2 shadow-sm w-full bg-white"
+                              modifiers={{
+                                hasAppointments: (date) => getAppointmentsForDate(date).length > 0
+                              }}
+                              modifiersStyles={{
+                                hasAppointments: {
+                                  backgroundColor: 'rgb(59 130 246 / 0.15)',
+                                  color: 'rgb(59 130 246)',
+                                  fontWeight: '600',
+                                  borderRadius: '8px',
+                                  border: '2px solid rgb(59 130 246 / 0.3)'
+                                },
+                                today: {
+                                  backgroundColor: 'rgb(251 146 60 / 0.1)',
+                                  color: 'rgb(251 146 60)',
+                                  fontWeight: '600',
+                                  border: '2px solid rgb(251 146 60 / 0.3)'
+                                }
+                              }}
+                            />
+                          </div>
                         </CardContent>
                       </Card>
                     </div>
 
                     {/* Selected Date Appointments Sidebar */}
-                    <div className="lg:col-span-2">
-                      <Card className="border-2 shadow-lg bg-white/50 backdrop-blur-sm h-fit sticky top-6">
-                        <CardHeader className="pb-4 border-b bg-gradient-to-r from-primary/5 to-secondary/5">
-                          <CardTitle className="text-lg lg:text-xl flex items-center gap-3">
-                            <Clock className="w-6 h-6 text-primary" />
+                    <div>
+                      <Card className="border-2 shadow-lg bg-white/50 backdrop-blur-sm h-full flex flex-col">
+                        <CardHeader className="pb-3 border-b bg-gradient-to-r from-primary/5 to-secondary/5 shrink-0">
+                          <CardTitle className="text-lg flex items-center gap-3">
+                            <Clock className="w-5 h-5 text-primary" />
                             {selectedDate ? selectedDate.toLocaleDateString('en-US', {
                               weekday: 'long',
                               year: 'numeric',
@@ -4122,9 +4060,9 @@ useEffect(() => {
                               day: 'numeric'
                             }) : 'Select a date'}
                           </CardTitle>
-                          <CardDescription className="text-base font-medium">
+                          <CardDescription className="text-sm font-medium">
                             {selectedDate ? (
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 mt-2">
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/20">
                                   {getAppointmentsForDate(selectedDate).length} appointment(s)
                                 </span>
@@ -4132,64 +4070,65 @@ useEffect(() => {
                             ) : 'Choose a date from the calendar'}
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="pt-6 px-6">
+                        <CardContent className="pt-4 px-6 pb-6 flex-1 overflow-y-auto">
                           {selectedDate && (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                               {getAppointmentsForDate(selectedDate).map((appointment) => (
                                 <div
                                   key={appointment.id.toString()}
-                                  className="group p-5 border-2 border-gray-100 rounded-2xl cursor-pointer hover:border-primary/30 hover:shadow-xl transition-all duration-300 bg-white hover:bg-gradient-to-r hover:from-primary/5 hover:to-secondary/5"
+                                  className="group p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-primary/30 hover:shadow-lg transition-all duration-300 bg-white hover:bg-gradient-to-r hover:from-primary/5 hover:to-secondary/5"
                                   onClick={() => handleAppointmentClick(appointment)}
                                 >
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-4">
-                                      <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                                        <User className="w-6 h-6 text-primary" />
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center border-2 border-white shadow-sm shrink-0">
+                                        <User className="w-5 h-5 text-primary" />
                                       </div>
-                                      <div>
-                                        <span className="font-semibold text-base text-gray-900 group-hover:text-primary transition-colors">{appointment.time}</span>
-                                        <div className={`flex items-center gap-2 mt-1 ${getSourceColor(appointment.source)}`}>
+                                      <div className="min-w-0">
+                                        <span className="font-semibold text-sm text-gray-900 group-hover:text-primary transition-colors block">{appointment.time}</span>
+                                        <div className={`flex items-center gap-1 mt-0.5 text-xs ${getSourceColor(appointment.source)}`}>
                                           {getSourceIcon(appointment.source)}
-                                          <span className="text-xs font-medium capitalize px-2 py-1 rounded-full bg-current/10">{appointment.source}</span>
+                                          <span className="font-medium capitalize px-1.5 py-0.5 rounded-full bg-current/10 truncate">{appointment.source}</span>
                                         </div>
                                       </div>
                                     </div>
-                                    <Badge className={`${getStatusColor(appointment.status)} border-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm`}>
+                                    <Badge className={`${getStatusColor(appointment.status)} border-2 text-xs font-semibold px-2 py-1 rounded-full shadow-sm shrink-0`}>
                                       {appointment.status}
                                     </Badge>
                                   </div>
-                                  <div className="space-y-3">
+                                  <div className="space-y-2">
                                     <div>
-                                      <p className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors">{appointment.customer}</p>
-                                      <p className="text-gray-700 text-sm font-medium">{appointment.service}</p>
+                                      <p className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors line-clamp-1">{appointment.customer}</p>
+                                      <p className="text-gray-700 text-xs font-medium line-clamp-1">{appointment.service}</p>
                                     </div>
-                                    <div className="flex items-center justify-between pt-2 border-t border-gray-50">
-                                      <p className="text-gray-600 text-sm flex items-center gap-2">
-                                        <Scissors className="w-4 h-4 text-secondary" />
-                                        with {appointment.barber}
+                                    <div className="flex items-center justify-between pt-1.5 border-t border-gray-50 text-xs">
+                                      <p className="text-gray-600 flex items-center gap-1 truncate">
+                                        <Scissors className="w-3 h-3 text-secondary shrink-0" />
+                                        {appointment.barber}
                                       </p>
-                                      <span className="text-lg font-bold text-primary">{formatCurrency(appointment.price)}</span>
+                                      <span className="text-sm font-bold text-primary shrink-0">{formatCurrency(appointment.price)}</span>
                                     </div>
                                     {appointment.notes && (
-                                      <div className="bg-gray-50 rounded-lg p-3 mt-3">
-                                        <p className="text-xs text-gray-600 italic">"{appointment.notes}"</p>
+                                      <div className="bg-gray-50 rounded-lg p-2 mt-2">
+                                        <p className="text-xs text-gray-600 italic line-clamp-2">"{appointment.notes}"</p>
                                       </div>
                                     )}
                                   </div>
                                 </div>
                               ))}
                               {getAppointmentsForDate(selectedDate).length === 0 && (
-                                <div className="text-center py-16 px-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl border-2 border-dashed border-gray-200">
-                                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                                    <Calendar className="w-10 h-10 text-gray-400" />
+                                <div className="text-center py-10 px-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-200">
+                                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                                    <Calendar className="w-8 h-8 text-gray-400" />
                                   </div>
-                                  <h3 className="text-xl font-bold text-gray-600 mb-2">No appointments</h3>
-                                  <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">No appointments scheduled for this date.</p>
+                                  <h3 className="text-base font-bold text-gray-600 mb-1">No appointments</h3>
+                                  <p className="text-gray-500 text-xs mb-4">No appointments scheduled for this date.</p>
                                   <Button 
                                     onClick={() => setShowBookingDialog(true)}
-                                    className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full"
+                                    className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-full text-sm"
+                                    size="sm"
                                   >
-                                    <Plus className="w-4 h-4 mr-2" />
+                                    <Plus className="w-3 h-3 mr-1" />
                                     Create Booking
                                   </Button>
                                 </div>
@@ -4203,13 +4142,15 @@ useEffect(() => {
                 </TabsContent>
 
                 {/* Advanced Calendar Tab */}
-               <AdvancedCalendar
-  appointments={finalAppointments as any}
-  onAppointmentClick={handleAppointmentClick as any}
-  onStatusChange={(appointmentId, newStatus) => handleStatusChange(appointmentId.toString(), newStatus)}
-  onCreateBooking={handleCreateBooking}
-  staff={staffMembers}
-/>
+                <TabsContent value="advanced-calendar" className="space-y-6">
+                  <AdvancedCalendar
+                    appointments={finalAppointments as any}
+                    onAppointmentClick={handleAppointmentClick as any}
+                    onStatusChange={(appointmentId, newStatus) => handleStatusChange(appointmentId.toString(), newStatus)}
+                    onCreateBooking={handleCreateBooking}
+                    staff={staffMembers}
+                  />
+                </TabsContent>
 
                 {/* List View Tab */}
                 <TabsContent value="list" className="space-y-8">

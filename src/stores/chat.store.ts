@@ -20,6 +20,7 @@ export interface Conversation {
   customerPhone?: string;
   customerEmail?: string;
   branchId?: string;
+  type?: 'admin-to-branch' | 'customer';
   lastMessage?: Message;
   unreadCount: number;
   createdAt: Date;

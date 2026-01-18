@@ -27,7 +27,7 @@ const currencyLocales: Record<Currency, string> = {
 export const useCurrencyStore = create<CurrencyStore>()(
   persist(
     (set, get) => ({
-      currency: 'USD',
+      currency: 'AED',
 
       setCurrency: (currency: Currency) => set({ currency }),
 

@@ -263,11 +263,40 @@ export default function SuperAdminStaff() {
         updatedAt: serverTimestamp()
       };
 
-      await addDoc(staffRef, newStaffData);
+      const staffDocRef = await addDoc(staffRef, newStaffData);
+      
+      // If this is a branch admin, create an automatic chat conversation
+      if (formData.role === 'branch_admin' && user?.id) {
+        const conversationsRef = collection(db, 'conversations');
+        const newConversation = {
+          id: `admin-${staffDocRef.id}`,
+          customerId: staffDocRef.id,
+          staffEmail: formData.email, // Store the staff email for matching
+          customerName: formData.name,
+          customerPhone: formData.phone || '',
+          customerEmail: formData.email || '',
+          branchId: formData.branch || '',
+          superAdminId: user.id,
+          superAdminName: user.email || 'Super Admin',
+          staffId: formData.email, // Also store email as staffId for matching
+          type: 'admin-to-branch', // Special type for admin conversations
+          unreadCount: 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        
+        try {
+          await addDoc(conversationsRef, newConversation);
+          console.log('✅ Automatic chat conversation created for branch admin:', formData.name);
+        } catch (chatError) {
+          console.error('⚠️ Error creating chat conversation:', chatError);
+          // Don't fail the staff creation if chat creation fails
+        }
+      }
       
       setAddDialogOpen(false);
       resetForm();
-      alert('Staff added successfully!');
+      alert('Staff added successfully!' + (formData.role === 'branch_admin' ? ' Chat conversation has been created.' : ''));
       
     } catch (error) {
       console.error("Error adding staff: ", error);

@@ -553,7 +553,7 @@ export default function ServicesPage() {
 
   // Handle share service
   const handleShareService = (service: Service) => {
-    const shareText = `Check out ${service.name} - ${service.description}. Price: $${service.price}. Duration: ${service.duration} minutes.`;
+    const shareText = `Check out ${service.name} - ${service.description}. Price: AED ${service.price}. Duration: ${service.duration} minutes.`;
     
     if (navigator.share) {
       navigator.share({
@@ -709,7 +709,7 @@ export default function ServicesPage() {
                                     <Clock className="w-3.5 h-3.5 text-secondary" />
                                     <span className="text-xs font-bold text-secondary">{service.duration}m</span>
                                   </div>
-                                  <span className="font-bold text-primary text-lg">${service.price}</span>
+                                  <span className="font-bold text-primary text-lg">AED {service.price}</span>
                                 </div>
                               </div>
                               

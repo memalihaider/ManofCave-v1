@@ -516,6 +516,7 @@ export default function SuperAdminAppointments() {
   const [branchFilter, setBranchFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const { 
     appointments, 
@@ -528,16 +529,20 @@ export default function SuperAdminAppointments() {
     setupRealtimeUpdates
   } = useAppointmentsStore();
 
-  // Fetch data on mount and setup real-time updates
+  // Fetch data on mount and setup real-time updates - only when user is available and hasn't initialized yet
   useEffect(() => {
+    if (!user || hasInitialized) return;
+
     const userBranch = user?.role === 'admin' ? user.branchName : undefined;
     fetchAppointments(userBranch);
     
     const unsubscribe = setupRealtimeUpdates(userBranch);
+    setHasInitialized(true);
+    
     return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, [user]);
+  }, [user?.email, hasInitialized, fetchAppointments, setupRealtimeUpdates]);
 
   const handleLogout = () => {
     logout();

@@ -891,9 +891,9 @@ export default function SuperAdminOrders() {
                                     {product.productName}
                                   </h5>
                                   <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                                    <span>Price: ${product.price}</span>
+                                    <span>Price: AED {product.price}</span>
                                     <span>Quantity: {product.quantity}</span>
-                                    <span>Total: ${product.price * product.quantity}</span>
+                                    <span>Total: AED {product.price * product.quantity}</span>
                                   </div>
                                 </div>
                                 

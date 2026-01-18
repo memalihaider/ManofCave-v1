@@ -53,6 +53,7 @@ import {
   AdminMobileSidebar,
 } from "@/components/admin/AdminSidebar";
 import { cn } from "@/lib/utils";
+import { DashboardSkeleton } from "@/components/admin/DashboardSkeleton";
 
 // Firebase imports
 import { db } from "@/lib/firebase";
@@ -264,6 +265,7 @@ export default function SuperAdminDashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        const startTime = Date.now();
 
         console.log("🔄 Fetching dashboard data...");
         console.log("👤 User:", {
@@ -284,7 +286,7 @@ export default function SuperAdminDashboard() {
 
         console.log("🏢 Total branches:", branchesData.length);
 
-        // 2. Fetch all data
+        // 2. Fetch all data in parallel for faster loading
         const [
           servicesSnapshot,
           productsSnapshot,
@@ -643,7 +645,10 @@ export default function SuperAdminDashboard() {
       } catch (error) {
         console.error("❌ Error fetching dashboard data:", error);
       } finally {
-        setLoading(false);
+        // Add minimum delay for smooth transition (300ms)
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       }
     };
 
@@ -685,32 +690,7 @@ export default function SuperAdminDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-center space-y-6">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-gray-200"></div>
-            <div className="absolute top-0 left-0 h-24 w-24 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold text-gray-900 font-serif">
-              Loading Dashboard
-            </h3>
-            <p className="text-sm text-gray-500">
-              Fetching real-time data from database...
-            </p>
-          </div>
-          <div className="w-48 mx-auto">
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-primary rounded-full animate-pulse"
-                style={{ width: '75%' }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -731,8 +711,8 @@ export default function SuperAdminDashboard() {
         )}
       >
         {/* Modern Header */}
-        <header className="bg-gradient-to-r from-primary via-primary/95 to-primary/90 shadow-lg shadow-primary/10 border-b border-primary/20">
-          <div className="flex items-center justify-between px-1 py-1">
+        <header className="bg-primary border-b border-primary/20">
+          <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
               <AdminMobileSidebar
                 role={
@@ -743,73 +723,27 @@ export default function SuperAdminDashboard() {
                 onToggle={() => setSidebarOpen(!sidebarOpen)}
               />
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
-                  <Building className="h-7 w-7 text-white" />
+                <div className="p-2 bg-white/20 rounded-lg">
+                  <Building className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl font-bold text-white font-serif">
-                      {user?.role === "admin"
-                        ? "Branch Dashboard"
-                        : "Super Admin Dashboard"}
-                    </h1>
-                    {user?.role === "admin" && user?.branchName && (
-                      <Badge className="bg-white/20 text-white border-0 px-3 py-1 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">
-                        🏢 {user.branchName}
-                      </Badge>
-                    )}
-                    {user?.role === "super_admin" && (
-                      <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 px-3 py-1 rounded-full">
-                        👑 Super Admin
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-white/90 mt-1 flex items-center gap-2">
-                    <Activity className="h-3 w-3 animate-pulse" />
+                  <h1 className="text-xl font-bold text-white">
                     {user?.role === "admin"
-                      ? `Managing ${user?.branchName || "your branch"}`
-                      : "Multi-Branch Management System"}
-                  </p>
+                      ? "Branch Dashboard"
+                      : "Super Admin Dashboard"}
+                  </h1>
+                  {user?.role === "admin" && user?.branchName && (
+                    <p className="text-sm text-white/80">
+                      {user.branchName}
+                    </p>
+                  )}
+                  {user?.role === "super_admin" && (
+                    <p className="text-sm text-white/80">
+                      Multi-Branch Management System
+                    </p>
+                  )}
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-xl bg-white/10 hover:bg-white/20 text-white"
-              >
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-
-              {/* User Profile */}
-              <div className="flex items-center gap-3 bg-white/10 px-4 py-2.5 rounded-2xl backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer">
-                <Avatar className="h-10 w-10 border-2 border-white/30">
-                  <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-white font-bold">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-white">
-                  <p className="text-sm font-semibold">{user?.email}</p>
-                  <p className="text-xs opacity-90 capitalize">
-                    {user?.role?.replace("_", " ")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Logout Button */}
-              <Button
-                onClick={handleLogout}
-                className="bg-white text-primary hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-4"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
             </div>
           </div>
         </header>
@@ -819,7 +753,7 @@ export default function SuperAdminDashboard() {
           <div className="h-full p-4 lg:p-6">
             {/* Dashboard Stats Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
+              {/* <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 font-serif">
                     Dashboard Overview
@@ -828,27 +762,7 @@ export default function SuperAdminDashboard() {
                     Real-time statistics and performance metrics
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    className="border-gray-200 hover:border-primary/30 rounded-xl"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Report
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-gray-200 hover:border-primary/30 rounded-xl"
-                  >
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                  </Button>
-                  <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add New
-                  </Button>
-                </div>
-              </div>
+              </div> */}
 
               {/* Main Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -866,7 +780,7 @@ export default function SuperAdminDashboard() {
                   <CardContent className="relative z-10">
                     <div className="flex items-end gap-2 mb-3">
                       <div className="text-3xl font-bold text-gray-900">
-                        ${overallStats.totalRevenue.toLocaleString()}
+                        AED {overallStats.totalRevenue.toLocaleString()}
                       </div>
                       <div className="text-sm text-green-600 font-semibold flex items-center mb-2 bg-green-100 px-2 py-1 rounded-full">
                         <TrendingUp className="h-3 w-3 mr-1" />
@@ -901,7 +815,7 @@ export default function SuperAdminDashboard() {
                       </div>
                       <div className="text-sm text-green-600 font-semibold flex items-center mb-2 bg-purple-100 px-2 py-1 rounded-full">
                         <TrendingUp className="h-3 w-3 mr-1" />
-                        +5.2%
+                        +
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mb-3">
@@ -1099,30 +1013,9 @@ export default function SuperAdminDashboard() {
                           Browse through your latest additions and activities
                         </CardDescription>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-200 hover:border-primary/30"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View All
-                        </Button>
-                      </div>
                     </div>
                     <TabsList className="grid grid-cols-5 w-full bg-gray-100/50 p-1 rounded-xl">
-                      <TabsTrigger
-                        value="bookings"
-                        className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-primary rounded-lg transition-all"
-                      >
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Bookings
-                        {recentBookings.length > 0 && (
-                          <Badge className="ml-2 h-5 w-5 p-0 bg-primary text-white">
-                            {recentBookings.length}
-                          </Badge>
-                        )}
-                      </TabsTrigger>
+                     
                       <TabsTrigger
                         value="services"
                         className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-pink-600 rounded-lg transition-all"
@@ -1159,105 +1052,14 @@ export default function SuperAdminDashboard() {
                           </Badge>
                         )}
                       </TabsTrigger>
-                      <TabsTrigger
-                        value="activities"
-                        className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-600 rounded-lg transition-all"
-                      >
-                        <Activity className="h-4 w-4 mr-2" />
-                        Activities
-                        {recentActivities.length > 0 && (
-                          <Badge className="ml-2 h-5 w-5 p-0 bg-purple-500 text-white">
-                            {recentActivities.length}
-                          </Badge>
-                        )}
-                      </TabsTrigger>
+                      
                     </TabsList>
                   </div>
                 </CardHeader>
 
                 <CardContent className="p-6">
-                  {/* Bookings Tab */}
-                  <TabsContent value="bookings" className="mt-0">
-                    {recentBookings.length === 0 ? (
-                      <div className="text-center py-12">
-                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4">
-                          <Calendar className="h-10 w-10 text-gray-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          No Recent Bookings
-                        </h3>
-                        <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-                          Bookings will appear here once customers start booking
-                          services
-                        </p>
-                        <Link
-                          href="/admin/bookings"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors shadow-md"
-                        >
-                          <Calendar className="h-4 w-4" />
-                          View All Bookings
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {recentBookings.map((booking) => (
-                          <div
-                            key={booking.id}
-                            className="flex items-center justify-between p-5 bg-gradient-to-r from-white to-gray-50/50 border border-gray-100 rounded-2xl hover:border-primary/20 hover:shadow-lg transition-all duration-300 group"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="p-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl">
-                                <Calendar className="h-6 w-6 text-blue-600" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between mb-2">
-                                  <h3 className="font-bold text-lg text-gray-900">
-                                    {booking.serviceName}
-                                  </h3>
-                                  <Badge
-                                    className={cn(
-                                      "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
-                                      getStatusColor(booking.status),
-                                    )}
-                                  >
-                                    <span className="flex items-center gap-1">
-                                      {getStatusIcon(booking.status)}
-                                      {booking.status}
-                                    </span>
-                                  </Badge>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                  <div>
-                                    <p className="text-xs text-gray-500">
-                                      Customer
-                                    </p>
-                                    <p className="font-semibold">
-                                      {booking.customerName}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500">Date</p>
-                                    <p className="font-semibold">{booking.date}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500">Time</p>
-                                    <p className="font-semibold">{booking.time}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500">Amount</p>
-                                    <p className="font-semibold text-lg text-green-600">
-                                      ${booking.totalAmount}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition-colors ml-4" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </TabsContent>
+                  
+                  
 
                   {/* Services Tab */}
                   <TabsContent value="services" className="mt-0">
@@ -1314,7 +1116,7 @@ export default function SuperAdminDashboard() {
                               <div>
                                 <p className="text-xs text-gray-500">Price</p>
                                 <p className="text-xl font-bold text-primary">
-                                  ${service.price}
+                                  AED {service.price}
                                 </p>
                               </div>
                               <div>
@@ -1397,7 +1199,7 @@ export default function SuperAdminDashboard() {
                             <div className="mb-4">
                               <p className="text-xs text-gray-500 mb-1">Price</p>
                               <p className="text-2xl font-bold text-primary">
-                                ${product.price}
+                                AED {product.price}
                               </p>
                             </div>
                             <div className="flex items-center justify-between">
@@ -1562,226 +1364,11 @@ export default function SuperAdminDashboard() {
               </Tabs>
             </Card>
 
-            {/* Quick Actions & Recent Activities */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Quick Actions */}
-              <div className="lg:col-span-2">
-                <Card className="border-none shadow-xl">
-                  <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-bold text-gray-900 font-serif">
-                        Quick Actions
-                      </CardTitle>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-primary hover:text-primary/80"
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Add More
-                      </Button>
-                    </div>
-                    <CardDescription>
-                      Manage your business with these quick actions
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <Link
-                        href="/admin/branches"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-primary/30 hover:bg-gradient-to-br hover:from-primary/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Building className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Manage Branches
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          View & manage branches
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/admin/staff"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-green-500/30 hover:bg-gradient-to-br hover:from-green-500/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Users className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Manage Staff
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          Add/Edit staff members
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/admin/categories"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Layers className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Categories
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          Organize services & products
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/admin/products"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-cyan-500/30 hover:bg-gradient-to-br hover:from-cyan-500/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Package className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Products
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          Manage inventory
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/admin/services"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-pink-500/30 hover:bg-gradient-to-br hover:from-pink-500/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Settings className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Services
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          Edit & manage services
-                        </span>
-                      </Link>
-
-                      <Link
-                        href="/admin/bookings"
-                        className="flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 hover:border-amber-500/30 hover:bg-gradient-to-br hover:from-amber-500/5 hover:to-white hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className="p-4 bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          <Calendar className="h-7 w-7 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-center text-gray-900">
-                          Bookings
-                        </span>
-                        <span className="text-xs text-gray-500 text-center mt-1">
-                          View all bookings
-                        </span>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Recent Activities */}
-              <Card className="border-none shadow-xl h-fit">
-                <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-bold text-gray-900 font-serif">
-                      Recent Activities
-                    </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-primary hover:text-primary/80"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View All
-                    </Button>
-                  </div>
-                  <CardDescription>
-                    Latest system activities and notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6">
-                  {recentActivities.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">No recent activities</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {recentActivities.map((activity, index) => (
-                        <div
-                          key={index}
-                          className="flex items-start gap-3 p-4 bg-gradient-to-r from-gray-50/50 to-white border border-gray-100 rounded-xl hover:border-primary/20 hover:shadow-sm transition-all duration-200 group"
-                        >
-                          <div className="relative">
-                            <div className="w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full mt-2"></div>
-                            <div className="absolute top-2 left-2 w-3 h-3 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full animate-ping"></div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {activity.message}
-                            </p>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-xs text-gray-500">
-                                {activity.time}
-                              </span>
-                              {activity.branch && (
-                                <Badge className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                                  {activity.branch}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* System Status */}
-                  <div className="mt-8 pt-6 border-t border-gray-100">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                      System Status
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          Database Connection
-                        </span>
-                        <Badge className="bg-green-100 text-green-700">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Active
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          Firebase Services
-                        </span>
-                        <Badge className="bg-green-100 text-green-700">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Running
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          API Response Time
-                        </span>
-                        <Badge className="bg-blue-100 text-blue-700">
-                          <Clock className="h-3 w-3 mr-1" />
-                          124ms
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
 
             {/* Footer Note */}
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-500">
-                Dashboard updated in real-time • Last refresh: Just now • All
-                times are in your local timezone
+                This ERP System is Developed by <a href="https://largifysolutions.com">Largify Solutions Limited</a>
               </p>
             </div>
           </div>

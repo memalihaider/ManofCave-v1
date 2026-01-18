@@ -31,6 +31,8 @@ import { useChatStore, type Message, type Conversation } from "@/stores/chat.sto
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import { formatDistanceToNow } from "date-fns";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface Feedback {
   id: string;
@@ -88,94 +90,85 @@ export default function AdminMessages() {
     router.push('/login');
   };
 
-  // Mock data for demonstration
+  // Fetch conversations from Firebase
   useEffect(() => {
-    const store = useChatStore.getState();
+    const fetchConversations = async () => {
+      if (!user?.email) return;
 
-    // Check if we already have mock data by looking for specific message IDs
-    const hasMockData = store.messages.some(msg =>
-      msg.id === 'msg-1' || msg.id === 'msg-2' || msg.id === 'msg-3'
-    );
+      try {
+        const store = useChatStore.getState();
+        
+        // Query conversations for this branch admin
+        const conversationsRef = collection(db, 'conversations');
+        
+        // Get admin-to-branch conversations where this user is the staff member
+        const q = query(
+          conversationsRef,
+          where('staffEmail', '==', user.email)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const fetchedConversations: Conversation[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          fetchedConversations.push({
+            id: doc.id,
+            customerId: data.superAdminId,
+            customerName: data.superAdminName || 'Super Admin',
+            customerPhone: '',
+            customerEmail: 'admin@system',
+            branchId: data.branchId,
+            unreadCount: data.unreadCount || 0,
+            createdAt: data.createdAt?.toDate?.() || new Date(),
+            updatedAt: data.updatedAt?.toDate?.() || new Date(),
+            type: data.type
+          });
+        });
 
-    if (!hasMockData) {
-      // Clear any existing mock conversations and messages first
-      store.setConversations([]);
-      store.setMessages([]);
+        // Set the fetched conversations
+        store.setConversations(fetchedConversations);
 
-      const mockConversations: Conversation[] = [
-        {
-          id: '1',
-          customerId: 'cust1',
-          customerName: 'John Doe',
-          customerPhone: '+1234567890',
-          customerEmail: 'john@example.com',
-          branchId: 'branch1',
-          unreadCount: 2,
-          createdAt: new Date('2025-12-01T10:00:00'),
-          updatedAt: new Date('2025-12-01T14:30:00')
-        },
-        {
-          id: '2',
-          customerId: 'cust2',
-          customerName: 'Jane Smith',
-          customerPhone: '+1234567891',
-          customerEmail: 'jane@example.com',
-          branchId: 'branch1',
-          unreadCount: 0,
-          createdAt: new Date('2025-11-30T09:00:00'),
-          updatedAt: new Date('2025-12-01T12:00:00')
+        // Fetch messages for each conversation
+        for (const conversation of fetchedConversations) {
+          const messagesRef = collection(db, 'messages');
+          const messagesQ = query(
+            messagesRef,
+            where('conversationId', '==', conversation.id)
+          );
+          
+          const messagesSnapshot = await getDocs(messagesQ);
+          messagesSnapshot.forEach((doc) => {
+            const data = doc.data();
+            store.addMessage({
+              id: doc.id,
+              content: data.content,
+              senderId: data.senderId,
+              senderName: data.senderName,
+              senderType: data.senderType,
+              branchId: data.branchId,
+              timestamp: data.timestamp?.toDate?.() || new Date(),
+              read: data.read || false,
+              conversationId: data.conversationId
+            });
+          });
         }
-      ];
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      }
+    };
 
-      const mockMessages: Message[] = [
-        {
-          id: 'msg-1',
-          content: 'Hi, I would like to book an appointment for tomorrow',
-          senderId: 'cust1',
-          senderName: 'John Doe',
-          senderType: 'customer',
-          branchId: 'branch1',
-          timestamp: new Date('2025-12-01T14:00:00'),
-          read: false,
-          conversationId: '1'
-        },
-        {
-          id: 'msg-2',
-          content: 'Hello John! I can help you with that. What time works best for you?',
-          senderId: 'admin1',
-          senderName: 'Admin',
-          senderType: 'admin',
-          branchId: 'branch1',
-          timestamp: new Date('2025-12-01T14:15:00'),
-          read: true,
-          conversationId: '1'
-        },
-        {
-          id: 'msg-3',
-          content: 'Around 2 PM would be great',
-          senderId: 'cust1',
-          senderName: 'John Doe',
-          senderType: 'customer',
-          branchId: 'branch1',
-          timestamp: new Date('2025-12-01T14:30:00'),
-          read: false,
-          conversationId: '1'
-        }
-      ];
+    fetchConversations();
+  }, [user?.email]);
 
-      // Set mock data
-      store.setConversations(mockConversations);
-      mockMessages.forEach(msg => store.addMessage(msg));
-    }
-
-    // Set mock feedbacks for branch
-    const mockFeedbacks: Feedback[] = [
-      {
-        id: 'fb-1',
-        customerName: 'Sarah Wilson',
-        customerEmail: 'sarah@example.com',
-        serviceOrProduct: 'Hair Spa Treatment',
-        rating: 5,
+  // Set mock feedbacks for branch
+  const mockFeedbacks: Feedback[] = [
+    {
+      id: 'fb-1',
+      customerName: 'Sarah Wilson',
+      customerEmail: 'sarah@example.com',
+      serviceOrProduct: 'Hair Spa Treatment',
+      rating: 5,
         comment: 'Excellent service! Very relaxing and professional staff.',
         branchId: 'branch1',
         type: 'service',
@@ -242,8 +235,10 @@ export default function AdminMessages() {
         status: 'rejected',
         replies: []
       }
-    ];
+  ];
 
+  // Initialize feedbacks
+  useEffect(() => {
     setFeedbacks(mockFeedbacks);
   }, []);
 

@@ -552,7 +552,7 @@ export default function ClientsManagement({
                   Total Spending
                 </p>
                 <p className="text-3xl font-serif font-bold text-primary">
-                  ${totalSpending.toLocaleString()}
+                  AED {totalSpending.toLocaleString()}
                 </p>
               </div>
               <DollarSign className="w-12 h-12 text-secondary/20" />
@@ -584,7 +584,7 @@ export default function ClientsManagement({
                   Avg Order Value
                 </p>
                 <p className="text-3xl font-serif font-bold text-primary">
-                  ${avgOrderValue.toFixed(2)}
+                  AED {avgOrderValue.toFixed(2)}
                 </p>
               </div>
               <ShoppingCart className="w-12 h-12 text-secondary/20" />
@@ -883,7 +883,7 @@ export default function ClientsManagement({
                         </Badge>
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-bold text-green-600">
-                        ${client.spendingAmount.toLocaleString()}
+                        AED {client.spendingAmount.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-bold text-primary">
                         {client.loyaltyPoints.toLocaleString()}
@@ -997,7 +997,7 @@ export default function ClientsManagement({
                                               Total Spending
                                             </p>
                                             <p className="text-2xl font-bold text-primary mt-1">
-                                              $
+                                              AED
                                               {selectedClient.spendingAmount.toLocaleString()}
                                             </p>
                                           </div>
@@ -1208,7 +1208,7 @@ export default function ClientsManagement({
               </div>
               <div>
                 <Label className="text-xs font-bold uppercase">
-                  Spending Amount ($)
+                  Spending Amount (AED)
                 </Label>
                 <Input
                   type="number"

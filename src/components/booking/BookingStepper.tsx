@@ -123,7 +123,7 @@ export function BookingStepper({ selectedServiceId }: { selectedServiceId?: stri
                 >
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg">{service.name}</CardTitle>
-                    <CardDescription>${service.price} • {service.duration}</CardDescription>
+                    <CardDescription>AED {service.price} • {service.duration}</CardDescription>
                   </CardHeader>
                 </Card>
               ))}
