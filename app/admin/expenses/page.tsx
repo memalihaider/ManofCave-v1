@@ -478,7 +478,7 @@ export default function SuperAdminExpensesPage() {
       if (user?.role === 'admin' && user?.branchName) {
         // Get services for the branch
         const branchServices = services.filter(s => 
-          s.branchNames.includes(user.branchName)
+          s.branchNames.includes(user.branchName as string)
         );
         const branchServiceIds = branchServices.map(s => s.id);
         
@@ -627,17 +627,17 @@ export default function SuperAdminExpensesPage() {
     // Filter data based on selected branch
     const filteredProducts = selectedBranch === 'all' 
       ? products 
-      : products.filter(p => p.branchNames.includes(selectedBranch));
+      : products.filter(p => p.branchNames.includes(selectedBranch as string));
     
     const filteredServices = selectedBranch === 'all' 
       ? services 
-      : services.filter(s => s.branchNames.includes(selectedBranch));
+      : services.filter(s => s.branchNames.includes(selectedBranch as string));
     
     const filteredBookings = selectedBranch === 'all' 
       ? bookings 
       : bookings.filter(b => {
           const service = services.find(s => s.id === b.serviceId);
-          return service?.branchNames.includes(selectedBranch);
+          return service?.branchNames.includes(selectedBranch as string);
         });
 
     // NEW: Filter manual expenses
@@ -923,7 +923,7 @@ ${expenseSummary.categoryWiseData.map(c =>
       <div className="flex h-screen bg-[#f8f9fa]">
         {/* Sidebar */}
         <AdminSidebar
-          role={user?.role || 'admin'}
+          role="branch_admin"
           onLogout={handleLogout}
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(!sidebarOpen)}
@@ -936,7 +936,7 @@ ${expenseSummary.categoryWiseData.map(c =>
             <div className="flex items-center justify-between px-4 py-4 lg:px-8">
               <div className="flex items-center gap-4">
                 <AdminMobileSidebar
-                  role={user?.role || 'admin'}
+                  role="branch_admin"
                   onLogout={handleLogout}
                   isOpen={sidebarOpen}
                   onToggle={() => setSidebarOpen(!sidebarOpen)}

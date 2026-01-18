@@ -203,7 +203,7 @@ export default function AdminFeedbackPage() {
     // 🔥 CLIENT-SIDE BRANCH FILTERING FOR BRANCH ADMIN
     if (user?.role === 'admin' && user?.branchId) {
       filteredData = allFeedbacks.filter(feedback => 
-        feedback.productBranches?.includes(user.branchId)
+        feedback.productBranches?.includes(user.branchId as string)
       );
       console.log(`🏢 Branch Admin Client Filter: ${allFeedbacks.length} → ${filteredData.length} feedbacks`);
     } else if (user?.role === 'super_admin') {
